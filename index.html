@@ -3,1408 +3,1061 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIGITAL STATION // Private Space</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>龙宫非正常人类观察档案</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-primary: #0B0C10;
-            --bg-secondary: #111318;
-            --bg-card: #15171e;
-            --neon-purple: #8A2BE2;
-            --neon-cyan: #00FFCC;
-            --neon-orange: #FF4500;
-            --text-primary: #E8E8E8;
-            --text-secondary: #8892A4;
-            --text-dim: #4A5568;
-            --glow-purple: 0 0 20px rgba(138,43,226,0.4);
-            --glow-cyan: 0 0 20px rgba(0,255,204,0.4);
-            --glow-orange: 0 0 20px rgba(255,69,0,0.4);
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px) rotate(-2deg); }
+            75% { transform: translateX(5px) rotate(2deg); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes warning-flash {
+            0%, 100% { background: #FF0000; }
+            50% { background: #FFFF00; }
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            cursor: none;
+            cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><text y="24" font-size="24">🪭</text></svg>') 16 16, auto;
         }
 
         body {
-            font-family: 'JetBrains Mono', monospace;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: 'Noto Sans SC', 'Comic Sans MS', cursive;
+            background: #00FF00;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);
+            color: #FF00FF;
             overflow-x: hidden;
-            min-height: 100vh;
         }
 
-        /* Custom Cursor */
-        .cursor {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--neon-cyan);
-            border-radius: 50%;
+        /* 警告弹窗 */
+        .warning-overlay {
             position: fixed;
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
             z-index: 10000;
-            transition: transform 0.15s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-            transform: translate(-50%, -50%);
-        }
-
-        .cursor.hover {
-            transform: translate(-50%, -50%) scale(1.8);
-            border-color: var(--neon-purple);
-            box-shadow: var(--glow-purple);
-        }
-
-        .cursor-dot {
-            width: 6px;
-            height: 6px;
-            background: var(--neon-cyan);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 10001;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 10px var(--neon-cyan);
-        }
-
-        .cursor-trail {
-            position: fixed;
-            width: 4px;
-            height: 4px;
-            background: var(--neon-cyan);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.6;
-            transform: translate(-50%, -50%);
-        }
-
-        /* Film Grain & CRT Effects */
-        .noise-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9998;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-            background-repeat: repeat;
-        }
-
-        .scanline-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9997;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0,0,0,0.1) 0px,
-                rgba(0,0,0,0.1) 1px,
-                transparent 1px,
-                transparent 2px
-            );
-            opacity: 0.3;
-        }
-
-        /* Navigation */
-        .nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 24px 48px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            background: linear-gradient(180deg, var(--bg-primary) 0%, transparent 100%);
-        }
-
-        .nav-logo {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--neon-cyan);
-            text-decoration: none;
-            letter-spacing: 2px;
-            text-shadow: var(--glow-cyan);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 40px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            transition: color 0.3s ease, text-shadow 0.3s ease;
-            position: relative;
-        }
-
-        .nav-links a:hover {
-            color: var(--neon-cyan);
-            text-shadow: var(--glow-cyan);
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: var(--neon-cyan);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        /* Hero Section */
-        .hero {
-            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            overflow: hidden;
+            animation: warning-flash 0.5s infinite;
         }
 
-        #canvas-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
+        .warning-overlay.hidden {
+            display: none;
         }
 
-        .hero-content {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            max-width: 800px;
-            padding: 0 24px;
-        }
-
-        .hero-label {
-            font-size: 0.75rem;
-            color: var(--neon-purple);
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-bottom: 24px;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease forwards 0.5s;
-            text-shadow: var(--glow-purple);
-        }
-
-        .hero-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(2.5rem, 6vw, 5rem);
-            font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 24px;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease forwards 0.8s;
-        }
-
-        .hero-title .gradient-text {
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-subtitle {
-            font-size: 1rem;
-            color: var(--text-secondary);
+        .warning-box {
+            background: #C0C0C0;
+            border: 3px outset #FFFFFF;
+            padding: 0;
             max-width: 500px;
-            margin: 0 auto 40px;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease forwards 1.1s;
-            line-height: 1.8;
+            width: 90%;
+            box-shadow: 10px 10px 0 #000;
+            font-family: 'MS Sans Serif', Arial, sans-serif;
+            animation: pop 0.3s ease;
         }
 
-        .hero-cta {
-            display: inline-flex;
-            gap: 16px;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease forwards 1.4s;
-        }
-
-        .btn-primary {
-            padding: 14px 32px;
-            background: transparent;
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary:hover {
-            background: var(--neon-cyan);
-            color: var(--bg-primary);
-            box-shadow: var(--glow-cyan);
-        }
-
-        .btn-secondary {
-            padding: 14px 32px;
-            background: transparent;
-            border: 1px solid var(--text-dim);
-            color: var(--text-secondary);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--neon-purple);
-            color: var(--neon-purple);
-            box-shadow: var(--glow-purple);
-        }
-
-        .scroll-indicator {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            opacity: 0;
-            animation: fadeIn 1s ease forwards 2s;
-        }
-
-        .scroll-indicator span {
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            letter-spacing: 2px;
-        }
-
-        .scroll-line {
-            width: 1px;
-            height: 40px;
-            background: linear-gradient(180deg, var(--neon-cyan), transparent);
-            animation: scrollPulse 2s ease infinite;
-        }
-
-        /* Sections */
-        section {
-            padding: 120px 48px;
-            position: relative;
-        }
-
-        .section-header {
-            margin-bottom: 64px;
-        }
-
-        .section-label {
-            font-size: 0.7rem;
-            color: var(--neon-purple);
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-            text-shadow: var(--glow-purple);
-        }
-
-        .section-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 700;
-        }
-
-        /* About Section - System Config */
-        .about-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 48px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .system-config {
-            background: var(--bg-card);
-            border: 1px solid rgba(138,43,226,0.2);
-            padding: 32px;
-            position: relative;
-        }
-
-        .system-config::before {
-            content: 'SYSTEM SPECS';
-            position: absolute;
-            top: -10px;
-            left: 24px;
-            background: var(--bg-primary);
-            padding: 0 12px;
-            font-size: 0.7rem;
-            color: var(--neon-purple);
-            letter-spacing: 2px;
-        }
-
-        .config-row {
+        .warning-titlebar {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            color: white;
+            padding: 4px 8px;
             display: flex;
             justify-content: space-between;
-            padding: 16px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
         }
 
-        .config-row:last-child {
-            border-bottom: none;
-        }
-
-        .config-key {
-            color: var(--text-dim);
-            font-size: 0.85rem;
-        }
-
-        .config-value {
-            color: var(--neon-cyan);
-            font-size: 0.85rem;
-            text-align: right;
-        }
-
-        .about-text {
+        .warning-titlebar-buttons {
             display: flex;
-            flex-direction: column;
+            gap: 2px;
+        }
+
+        .warning-titlebar-btn {
+            width: 16px;
+            height: 14px;
+            background: #C0C0C0;
+            border: 1px outset #FFF;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
             justify-content: center;
+            cursor: pointer;
         }
 
-        .about-text p {
-            color: var(--text-secondary);
-            line-height: 2;
-            margin-bottom: 24px;
-            font-size: 0.95rem;
+        .warning-content {
+            padding: 20px;
+            text-align: center;
         }
 
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--neon-cyan);
-            font-size: 0.8rem;
-            margin-top: 16px;
+        .warning-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+            animation: shake 0.3s infinite;
         }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--neon-cyan);
-            border-radius: 50%;
-            animation: pulse 2s ease infinite;
-        }
-
-        /* Projects Section - Bento Box */
-        .bento-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(2, 280px);
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .bento-item {
-            background: var(--bg-card);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 32px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .bento-item:hover {
-            transform: translateY(-8px);
-            border-color: var(--neon-cyan);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4), var(--glow-cyan);
-        }
-
-        .bento-item.large {
-            grid-column: span 2;
-        }
-
-        .bento-item.tall {
-            grid-row: span 2;
-        }
-
-        .bento-tag {
-            font-size: 0.65rem;
-            color: var(--neon-purple);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-
-        .bento-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .bento-desc {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
+        .warning-text {
+            font-size: 14px;
+            color: #000;
+            margin-bottom: 15px;
             line-height: 1.6;
         }
 
-        .bento-footer {
+        .warning-text b {
+            color: #FF0000;
+        }
+
+        .warning-buttons {
             display: flex;
-            gap: 12px;
-            margin-top: 24px;
+            gap: 10px;
+            justify-content: center;
         }
 
-        .bento-tech {
-            padding: 4px 12px;
-            background: rgba(138,43,226,0.1);
-            border: 1px solid rgba(138,43,226,0.3);
-            font-size: 0.7rem;
-            color: var(--neon-purple);
+        .win98-btn {
+            background: #C0C0C0;
+            border: 2px outset #FFF;
+            padding: 6px 20px;
+            font-family: 'MS Sans Serif', Arial, sans-serif;
+            font-size: 12px;
+            cursor: pointer;
         }
 
-        .bento-item::after {
-            content: '';
+        .win98-btn:active {
+            border-style: inset;
+        }
+
+        .win98-btn.danger {
+            background: #FF0000;
+            color: white;
+            font-weight: bold;
+        }
+
+        .win98-btn.safe {
+            background: #00FF00;
+            color: #000;
+            font-weight: bold;
+            animation: rainbow 2s linear infinite;
+        }
+
+        /* 滚动公告 */
+        .marquee-bar {
+            background: #FF00FF;
+            color: #FFFF00;
+            padding: 8px 0;
+            font-weight: bold;
+            font-size: 14px;
+            overflow: hidden;
+            border-bottom: 3px solid #000;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 20s linear infinite;
+            font-family: 'Comic Sans MS', cursive;
+        }
+
+        /* 头部 */
+        .header {
+            background: linear-gradient(180deg, #FF6B00, #FF00FF, #00FFFF);
+            padding: 30px;
+            text-align: center;
+            border-bottom: 5px dashed #FFFF00;
+            position: relative;
+        }
+
+        .header::before {
+            content: '⚡🐉⚡🐉⚡🐉⚡🐉⚡🐉⚡🐉⚡';
+            display: block;
+            font-size: 20px;
+            margin-bottom: 10px;
+            animation: rainbow 3s linear infinite;
+        }
+
+        .site-title {
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 900;
+            color: #FFFF00;
+            text-shadow: 
+                3px 3px 0 #FF0000,
+                -3px -3px 0 #00FF00,
+                3px -3px 0 #0000FF,
+                -3px 3px 0 #FF00FF;
+            animation: glitch 0.5s infinite;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        .site-subtitle {
+            font-size: 18px;
+            color: #000;
+            margin-top: 10px;
+            font-family: 'Comic Sans MS', cursive;
+        }
+
+        .header-stamps {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(138,43,226,0.1) 0%, transparent 50%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            top: 20px;
+            right: 20px;
+            font-size: 12px;
+            background: #FF0000;
+            color: white;
+            padding: 5px 10px;
+            transform: rotate(15deg);
+            border: 2px solid #000;
+            font-weight: bold;
         }
 
-        .bento-item:hover::after {
-            opacity: 1;
+        /* 导航 */
+        .nav {
+            background: #000080;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-bottom: 3px solid #FFFF00;
         }
 
-        /* Contact Section */
-        .contact-container {
-            max-width: 800px;
+        .nav-btn {
+            background: #C0C0C0;
+            border: 2px outset #FFF;
+            padding: 8px 16px;
+            font-family: 'MS Sans Serif', Arial, sans-serif;
+            font-size: 12px;
+            cursor: pointer;
+            color: #000;
+            transition: all 0.1s;
+        }
+
+        .nav-btn:hover {
+            background: #FFFF00;
+            animation: shake 0.1s;
+        }
+
+        .nav-btn:active {
+            border-style: inset;
+        }
+
+        /* 主内容区 */
+        .main {
+            max-width: 1000px;
             margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 档案卡片 */
+        .archive-card {
+            background: #FFFFCC;
+            border: 3px solid #000;
+            margin: 20px 0;
+            box-shadow: 8px 8px 0 #000;
+            position: relative;
+            transform: rotate(-1deg);
+        }
+
+        .archive-card:nth-child(even) {
+            transform: rotate(1deg);
+        }
+
+        .archive-card-header {
+            background: #FF0000;
+            color: white;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 16px;
+            border-bottom: 3px solid #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .archive-card-header .classification {
+            background: #FFFF00;
+            color: #FF0000;
+            padding: 2px 8px;
+            font-size: 11px;
+            animation: blink 1s infinite;
+        }
+
+        .archive-card-body {
+            padding: 20px;
+        }
+
+        /* 照片区 */
+        .photo-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .polaroid {
+            background: white;
+            padding: 10px 10px 40px 10px;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+            transform: rotate(-3deg);
+            transition: transform 0.3s;
+            position: relative;
+        }
+
+        .polaroid:hover {
+            transform: rotate(3deg) scale(1.05);
+            z-index: 10;
+        }
+
+        .polaroid img {
+            width: 200px;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .polaroid .caption {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            text-align: center;
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 12px;
+            color: #000;
+        }
+
+        .polaroid .red-arrow {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 40px;
+            transform: rotate(45deg);
+            animation: shake 0.5s infinite;
+        }
+
+        .polaroid .mosaic-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 200px;
+            height: 250px;
+            background: repeating-conic-gradient(#000 0% 25%, transparent 0% 50%) 50% / 10px 10px;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .polaroid .sticker {
+            position: absolute;
+            font-size: 24px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .polaroid .sticker:nth-child(1) { top: -15px; left: 5px; }
+        .polaroid .sticker:nth-child(2) { bottom: 45px; right: -10px; }
+
+        /* 属性面板 */
+        .stats-panel {
+            background: #000;
+            border: 3px solid #00FF00;
+            padding: 15px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            color: #00FF00;
+            margin: 15px 0;
+        }
+
+        .stats-panel h3 {
+            color: #FFFF00;
+            margin-bottom: 10px;
+            font-size: 12px;
             text-align: center;
         }
 
-        .contact-text {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            margin-bottom: 48px;
-            line-height: 1.8;
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dashed #00FF00;
         }
 
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 32px;
-            margin-bottom: 48px;
-        }
-
-        .social-link {
-            width: 60px;
-            height: 60px;
-            border: 1px solid var(--text-dim);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: var(--text-secondary);
-            transition: all 0.3s ease;
+        .stat-bar {
+            width: 100px;
+            height: 10px;
+            background: #333;
             position: relative;
             overflow: hidden;
         }
 
-        .social-link:hover {
-            border-color: var(--neon-cyan);
-            color: var(--neon-cyan);
-            box-shadow: var(--glow-cyan);
-            transform: translateY(-4px);
+        .stat-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00FF00, #FFFF00, #FF0000);
+            transition: width 1s ease;
         }
 
-        .social-link svg {
-            width: 24px;
-            height: 24px;
+        /* 测试按钮 */
+        .test-section {
+            text-align: center;
+            margin: 30px 0;
         }
 
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(0,255,204,0.3);
-            transform: scale(0);
-            animation: rippleEffect 0.6s linear;
-            pointer-events: none;
+        .test-btn {
+            background: linear-gradient(180deg, #FF6B00, #FF0000);
+            color: white;
+            border: 3px outset #FFAA00;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Noto Sans SC', sans-serif;
+            animation: rainbow 3s linear infinite;
+            transition: transform 0.1s;
         }
 
-        .contact-form {
-            display: grid;
-            gap: 20px;
-            text-align: left;
+        .test-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px #FF0000;
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+        .test-btn:active {
+            transform: scale(0.95);
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-group label {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            background: var(--bg-card);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 14px 16px;
-            color: var(--text-primary);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            outline: none;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            border-color: var(--neon-cyan);
-            box-shadow: var(--glow-cyan);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        .submit-btn {
-            padding: 16px 32px;
-            background: transparent;
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            cursor: none;
-            transition: all 0.3s ease;
-            width: fit-content;
-        }
-
-        .submit-btn:hover {
-            background: var(--neon-cyan);
-            color: var(--bg-primary);
-            box-shadow: var(--glow-cyan);
-        }
-
-        /* Terminal Easter Egg */
-        .terminal-trigger {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 40px;
-            height: 40px;
-            background: var(--bg-card);
-            border: 1px solid var(--text-dim);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            opacity: 0.3;
-        }
-
-        .terminal-trigger:hover {
-            opacity: 1;
-            border-color: var(--neon-cyan);
-            box-shadow: var(--glow-cyan);
-        }
-
-        .terminal-trigger svg {
-            width: 18px;
-            height: 18px;
-            color: var(--text-secondary);
-        }
-
-        .terminal-overlay {
+        /* 弹窗 */
+        .popup-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.8);
             z-index: 9999;
             display: none;
             align-items: center;
             justify-content: center;
         }
 
-        .terminal-overlay.active {
+        .popup-overlay.active {
             display: flex;
         }
 
-        .terminal {
+        .popup-window {
+            background: #C0C0C0;
+            border: 3px outset #FFF;
+            max-width: 400px;
             width: 90%;
-            max-width: 700px;
-            background: #0D1117;
-            border: 1px solid var(--neon-cyan);
-            box-shadow: 0 0 60px rgba(0,255,204,0.1);
+            box-shadow: 10px 10px 0 #000;
+            animation: pop 0.3s ease;
         }
 
-        .terminal-header {
-            background: #161B22;
-            padding: 12px 16px;
+        .popup-titlebar {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            color: white;
+            padding: 4px 8px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 12px;
+            font-weight: bold;
         }
 
-        .terminal-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .terminal-dot.red { background: #FF5F56; }
-        .terminal-dot.yellow { background: #FFBD2E; }
-        .terminal-dot.green { background: #27C93F; }
-
-        .terminal-title {
-            flex: 1;
+        .popup-content {
+            padding: 20px;
             text-align: center;
-            font-size: 0.75rem;
-            color: var(--text-dim);
         }
 
-        .terminal-body {
-            padding: 24px;
-            height: 400px;
-            overflow-y: auto;
-            font-size: 0.85rem;
+        .popup-content .emoji {
+            font-size: 64px;
+            display: block;
+            margin-bottom: 10px;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        .popup-content p {
+            font-size: 14px;
+            color: #000;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        /* 音乐控制 */
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .music-btn {
+            background: #FF00FF;
+            border: 3px outset #FFAAFF;
+            padding: 10px 15px;
+            font-size: 20px;
+            cursor: pointer;
+            animation: rainbow 2s linear infinite;
+            transition: transform 0.1s;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .music-btn.playing {
+            animation: rainbow 0.5s linear infinite, shake 0.1s infinite;
+        }
+
+        /* 底部 */
+        .footer {
+            background: #000;
+            color: #00FF00;
+            padding: 30px;
+            text-align: center;
+            border-top: 5px dashed #FF00FF;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            line-height: 2;
+        }
+
+        .footer .ascii-art {
+            font-size: 8px;
+            white-space: pre;
+            margin-bottom: 20px;
+            color: #FFFF00;
+        }
+
+        /* 乌木介绍区 */
+        .wumu-section {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 3px solid #00FFFF;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .wumu-section::before {
+            content: '【机密档案】';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #FF0000;
+            color: white;
+            padding: 2px 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .wumu-title {
+            color: #00FFFF;
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #00FFFF;
+        }
+
+        .wumu-desc {
+            color: #AAA;
+            font-size: 14px;
             line-height: 1.8;
         }
 
-        .terminal-line {
-            margin-bottom: 4px;
+        .wumu-desc strong {
+            color: #FF00FF;
         }
 
-        .terminal-line .prompt {
-            color: var(--neon-cyan);
-        }
-
-        .terminal-line .command {
-            color: var(--text-primary);
-        }
-
-        .terminal-line .output {
-            color: var(--text-secondary);
-        }
-
-        .terminal-line .error {
-            color: var(--neon-orange);
-        }
-
-        .terminal-input-line {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .terminal-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            outline: none;
-        }
-
-        .terminal-close {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            font-size: 1.5rem;
-            cursor: none;
-            transition: color 0.3s ease;
-        }
-
-        .terminal-close:hover {
-            color: var(--neon-orange);
-        }
-
-        /* Footer */
-        .footer {
-            padding: 48px;
-            border-top: 1px solid rgba(255,255,255,0.05);
+        /* 四风介绍区 */
+        .sifeng-section {
+            background: linear-gradient(135deg, #2d1b69, #11998e);
+            border: 3px dashed #FFFF00;
+            padding: 20px;
+            margin: 20px 0;
             text-align: center;
         }
 
-        .footer-text {
-            color: var(--text-dim);
-            font-size: 0.8rem;
+        .sifeng-title {
+            color: #FFFF00;
+            font-size: 24px;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0 #FF0000;
         }
 
-        .footer-text a {
-            color: var(--neon-cyan);
-            text-decoration: none;
+        .sifeng-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
         }
 
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .sifeng-item {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #FFFF00;
+            padding: 15px 10px;
+            transition: all 0.3s;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .sifeng-item:hover {
+            background: #FFFF00;
+            color: #000;
+            transform: scale(1.05);
+            animation: shake 0.2s;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .sifeng-item .icon {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 5px;
         }
 
-        @keyframes scrollPulse {
-            0% { opacity: 0; transform: scaleY(0); transform-origin: top; }
-            50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
-            100% { opacity: 0; transform: scaleY(1); transform-origin: bottom; }
+        .sifeng-item .name {
+            font-size: 14px;
+            font-weight: bold;
         }
 
-        @keyframes rippleEffect {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
+        .sifeng-item .desc {
+            font-size: 11px;
+            margin-top: 5px;
+            opacity: 0.8;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        /* 审批印章 */
+        .stamp {
+            position: absolute;
+            font-size: 14px;
+            color: #FF0000;
+            border: 3px solid #FF0000;
+            padding: 5px 10px;
+            transform: rotate(-15deg);
+            opacity: 0.7;
+            font-weight: bold;
         }
 
-        .fade-in {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .stamp.approved {
+            color: #00FF00;
+            border-color: #00FF00;
         }
 
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Responsive */
-        @media (max-width: 968px) {
-            .about-grid {
-                grid-template-columns: 1fr;
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .sifeng-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
-            .bento-grid {
-                grid-template-columns: 1fr 1fr;
-                grid-template-rows: auto;
+            .polaroid img {
+                width: 150px;
+                height: 190px;
             }
 
-            .bento-item.large {
-                grid-column: span 2;
-            }
-
-            .bento-item.tall {
-                grid-row: span 1;
-            }
-
-            .nav-links {
-                display: none;
-            }
-        }
-
-        @media (max-width: 640px) {
-            section {
-                padding: 80px 24px;
-            }
-
-            .bento-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .bento-item.large {
-                grid-column: span 1;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .social-links {
-                flex-wrap: wrap;
+            .polaroid .mosaic-overlay {
+                width: 150px;
+                height: 190px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Cursor -->
-    <div class="cursor" id="cursor"></div>
-    <div class="cursor-dot" id="cursor-dot"></div>
+    <!-- 警告弹窗 -->
+    <div class="warning-overlay" id="warning">
+        <div class="warning-box">
+            <div class="warning-titlebar">
+                <span>⚠️ 系统警告</span>
+                <div class="warning-titlebar-buttons">
+                    <div class="warning-titlebar-btn">×</div>
+                </div>
+            </div>
+            <div class="warning-content">
+                <div class="warning-icon">🐉</div>
+                <div class="warning-text">
+                    <b>【龙宫安全系统】检测到未知生物访问！</b><br><br>
+                    您即将进入<b>龙宫非正常人类观察档案</b>数据库。<br>
+                    本数据库包含大量<b>高能梗图</b>和<b>精神污染内容</b>。<br><br>
+                    请确认您已年满18周岁且精神状态正常。<br>
+                    否则请立即关闭页面并寻求心理援助。
+                </div>
+                <div class="warning-buttons">
+                    <button class="win98-btn danger" onclick="closeWarning(false)">我害怕了</button>
+                    <button class="win98-btn safe" onclick="closeWarning(true)">我承认龙宫最帅！</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Overlays -->
-    <div class="noise-overlay"></div>
-    <div class="scanline-overlay"></div>
+    <!-- 弹窗 -->
+    <div class="popup-overlay" id="popup">
+        <div class="popup-window">
+            <div class="popup-titlebar">
+                <span id="popup-title">提示</span>
+                <div class="warning-titlebar-buttons">
+                    <div class="warning-titlebar-btn" onclick="closePopup()">×</div>
+                </div>
+            </div>
+            <div class="popup-content">
+                <span class="emoji" id="popup-emoji">🤔</span>
+                <p id="popup-text">加载中...</p>
+                <button class="win98-btn" onclick="closePopup()">确定</button>
+            </div>
+        </div>
+    </div>
 
-    <!-- Navigation -->
+    <!-- 滚动公告 -->
+    <div class="marquee-bar">
+        <div class="marquee-content">
+            🐉 欢迎来到龙宫非正常人类观察档案！🐉 本站已通过龙宫安全认证（假的）🐉 乌木成精指数：99.9% 🐉 四风稳定度：-100% 🐉 本档案仅供娱乐，请勿当真 🐉 访客已突破8848人（假的）🐉
+        </div>
+    </div>
+
+    <!-- 头部 -->
+    <header class="header">
+        <div class="header-stamps">机密★禁止外传</div>
+        <h1 class="site-title">龙宫非正常人类观察档案</h1>
+        <p class="site-subtitle">「 在这片数字海域，每一个灵魂都是独特的研究样本 」</p>
+    </header>
+
+    <!-- 导航 -->
     <nav class="nav">
-        <a href="#" class="nav-logo">STATION://</a>
-        <ul class="nav-links">
-            <li><a href="#about" data-hover>ABOUT</a></li>
-            <li><a href="#projects" data-hover>PROJECTS</a></li>
-            <li><a href="#contact" data-hover>CONTACT</a></li>
-        </ul>
+        <button class="nav-btn" onclick="scrollTo('archive')">📋 档案库</button>
+        <button class="nav-btn" onclick="scrollTo('wumu')">🪵 乌木档案</button>
+        <button class="nav-btn" onclick="scrollTo('sifeng')">🌪️ 四风档案</button>
+        <button class="nav-btn" onclick="scrollTo('test')">🧪 趣味测试</button>
+        <button class="nav-btn" onclick="scrollTo('contact')">📡 联络站</button>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero" id="hero">
-        <canvas id="canvas-bg"></canvas>
-        <div class="hero-content">
-            <p class="hero-label">// DIGITAL SPACE STATION</p>
-            <h1 class="hero-title">
-                <span class="gradient-text">在代码与像素间</span><br>
-                构建秩序
-            </h1>
-            <p class="hero-subtitle">
-                一个漂浮在数字宇宙中的私人空间站。<br>
-                在这里，每一行代码都是一颗星辰。
-            </p>
-            <div class="hero-cta">
-                <a href="#projects" class="btn-primary" data-hover>EXPLORE</a>
-                <a href="#contact" class="btn-secondary" data-hover>CONNECT</a>
+    <!-- 主内容 -->
+    <main class="main">
+        <!-- 照片展示 -->
+        <div class="archive-card" id="archive">
+            <div class="archive-card-header">
+                <span>📸 龙宫真容捕获记录</span>
+                <span class="classification">绝密</span>
             </div>
-        </div>
-        <div class="scroll-indicator">
-            <span>SCROLL</span>
-            <div class="scroll-line"></div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about">
-        <div class="section-header fade-in">
-            <p class="section-label">// 001</p>
-            <h2 class="section-title">系统配置</h2>
-        </div>
-        <div class="about-grid">
-            <div class="system-config fade-in">
-                <div class="config-row">
-                    <span class="config-key">OS</span>
-                    <span class="config-value">人类 v1.0</span>
-                </div>
-                <div class="config-row">
-                    <span class="config-key">CPU</span>
-                    <span class="config-value">持续学习引擎</span>
-                </div>
-                <div class="config-row">
-                    <span class="config-key">GPU</span>
-                    <span class="config-value">创意渲染单元</span>
-                </div>
-                <div class="config-row">
-                    <span class="config-key">RAM</span>
-                    <span class="config-value">无限好奇心</span>
-                </div>
-                <div class="config-row">
-                    <span class="config-key">STORAGE</span>
-                    <span class="config-value">10TB 经验数据</span>
-                </div>
-                <div class="config-row">
-                    <span class="config-key">NETWORK</span>
-                    <span class="config-value">全栈连接</span>
-                </div>
-                <div class="config-row">
-                    <span class="config-key">STATUS</span>
-                    <span class="config-value" style="color: var(--neon-cyan);">ONLINE</span>
-                </div>
-            </div>
-            <div class="about-text fade-in">
-                <p>
-                    我是一名全栈开发者，专注于构建优雅且高效的数字体验。
-                    在这个由代码编织的宇宙中，我热衷于探索技术的边界，
-                    将创意转化为可交互的现实。
-                </p>
-                <p>
-                    从前端的像素级还原到后端的架构设计，
-                    从用户界面的流畅动画到服务器的稳定运行，
-                    我相信每一个细节都值得被精心雕琢。
-                </p>
-                <div class="status-indicator">
-                    <div class="status-dot"></div>
-                    <span>当前状态：接受新项目</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects">
-        <div class="section-header fade-in">
-            <p class="section-label">// 002</p>
-            <h2 class="section-title">项目矩阵</h2>
-        </div>
-        <div class="bento-grid">
-            <div class="bento-item large fade-in" data-hover>
-                <div>
-                    <p class="bento-tag">Featured Project</p>
-                    <h3 class="bento-title">NEXUS PLATFORM</h3>
-                    <p class="bento-desc">一个下一代协作平台，融合实时通信与AI智能助手，重新定义团队工作方式。</p>
-                </div>
-                <div class="bento-footer">
-                    <span class="bento-tech">React</span>
-                    <span class="bento-tech">Node.js</span>
-                    <span class="bento-tech">WebSocket</span>
-                </div>
-            </div>
-            <div class="bento-item fade-in" data-hover>
-                <div>
-                    <p class="bento-tag">Web App</p>
-                    <h3 class="bento-title">VOID TRACKER</h3>
-                    <p class="bento-desc">极简主义习惯追踪器，用数据可视化你的成长轨迹。</p>
-                </div>
-                <div class="bento-footer">
-                    <span class="bento-tech">Vue</span>
-                    <span class="bento-tech">D3.js</span>
-                </div>
-            </div>
-            <div class="bento-item fade-in" data-hover>
-                <div>
-                    <p class="bento-tag">Open Source</p>
-                    <h3 class="bento-title">PIXEL FORGE</h3>
-                    <p class="bento-desc">基于WebGL的实时图像处理工具，支持GPU加速滤镜。</p>
-                </div>
-                <div class="bento-footer">
-                    <span class="bento-tech">Three.js</span>
-                    <span class="bento-tech">WebGL</span>
-                </div>
-            </div>
-            <div class="bento-item tall fade-in" data-hover>
-                <div>
-                    <p class="bento-tag">Mobile</p>
-                    <h3 class="bento-title">STELLAR</h3>
-                    <p class="bento-desc">一款冥想与专注力训练App，用星空引导你的呼吸节奏。内置白噪音生成器和进度追踪系统。</p>
-                </div>
-                <div class="bento-footer">
-                    <span class="bento-tech">React Native</span>
-                    <span class="bento-tech">Firebase</span>
-                </div>
-            </div>
-            <div class="bento-item large fade-in" data-hover>
-                <div>
-                    <p class="bento-tag">Experimental</p>
-                    <h3 class="bento-title">CHRONO ENGINE</h3>
-                    <p class="bento-desc">基于物理的时间线编辑器，让你像编辑视频一样编辑代码历史。支持分支可视化与智能合并。</p>
-                </div>
-                <div class="bento-footer">
-                    <span class="bento-tech">TypeScript</span>
-                    <span class="bento-tech">Canvas</span>
-                    <span class="bento-tech">Git</span>
-                </div>
-            </div>
-            <div class="bento-item fade-in" data-hover>
-                <div>
-                    <p class="bento-tag">CLI Tool</p>
-                    <h3 class="bento-title">QUANTUM</h3>
-                    <p class="bento-desc">极速终端文件管理器，用模糊搜索替代无聊的cd命令。</p>
-                </div>
-                <div class="bento-footer">
-                    <span class="bento-tech">Rust</span>
-                    <span class="bento-tech">TUI</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact">
-        <div class="contact-container">
-            <div class="section-header fade-in">
-                <p class="section-label">// 003</p>
-                <h2 class="section-title">建立连接</h2>
-            </div>
-            <p class="contact-text fade-in">
-                有一个疯狂的想法？需要一个技术合伙人？<br>
-                或者只是想聊聊代码与宇宙？<br>
-                发送信号，我会在轨道上接收。
-            </p>
-            <div class="social-links fade-in">
-                <a href="https://github.com/5u-h" class="social-link" data-hover data-ripple>
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                    </svg>
-                </a>
-                <a href="mailto:hello@example.com" class="social-link" data-hover data-ripple>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="2" y="4" width="20" height="16" rx="2"/>
-                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                    </svg>
-                </a>
-                <a href="#" class="social-link" data-hover data-ripple>
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                    </svg>
-                </a>
-                <a href="#" class="social-link" data-hover data-ripple>
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                    </svg>
-                </a>
-            </div>
-            <form class="contact-form fade-in">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>姓名</label>
-                        <input type="text" placeholder="你的代号" data-hover>
+            <div class="archive-card-body">
+                <div class="photo-section">
+                    <div class="polaroid">
+                        <div class="sticker">💀</div>
+                        <div class="sticker">⭐</div>
+                        <div class="red-arrow">⬇️</div>
+                        <div class="mosaic-overlay"></div>
+                        <img src="dragon-photo.jpg" alt="龙宫真容" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22250%22><rect fill=%22%23333%22 width=%22200%22 height=%22250%22/><text fill=%22%2300ff00%22 font-size=%2214%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22>请放置图片</text></svg>'">
+                        <div class="caption">📸 疑似龙宫真容</div>
                     </div>
-                    <div class="form-group">
-                        <label>邮箱</label>
-                        <input type="email" placeholder="通讯频率" data-hover>
+                    <div class="polaroid" style="transform: rotate(5deg);">
+                        <div class="sticker">🔥</div>
+                        <div class="red-arrow" style="transform: rotate(-30deg);">➡️</div>
+                        <img src="dragon-photo.jpg" alt="乌木成精" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22250%22><rect fill=%22%23333%22 width=%22200%22 height=%22250%22/><text fill=%22%2300ff00%22 font-size=%2214%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22>请放置图片</text></svg>'">
+                        <div class="caption">🪵 乌木成精现场</div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>消息</label>
-                    <textarea placeholder="传输你的想法..." data-hover></textarea>
+                <div style="text-align: center; color: #FF0000; font-weight: bold; font-size: 14px;">
+                    ⚠️ 警告：图片已通过龙宫AI鉴定，确认为「碳基生物」形态 ⚠️
                 </div>
-                <button type="submit" class="submit-btn" data-hover>TRANSMIT</button>
-            </form>
+                <div class="stamp" style="top: 20px; right: 20px;">已验证</div>
+                <div class="stamp approved" style="bottom: 20px; left: 20px;">批准公开</div>
+            </div>
         </div>
-    </section>
 
-    <!-- Footer -->
+        <!-- 乌木档案 -->
+        <div class="wumu-section" id="wumu">
+            <h2 class="wumu-title">🪵 乌木档案 — 龙宫专属碳基生物材质</h2>
+            <div class="wumu-desc">
+                <p>
+                    <strong>「 乌木 」</strong>，又称<strong>「 被封印的千年老黑炭 」</strong>，是龙宫最珍贵的非物质文化遗产。
+                </p>
+                <p>
+                    据龙宫考古学家考证，乌木的形成需要经历<strong>至少500年的精神污染</strong>和<strong>无数次WiFi断连</strong>的淬炼。
+                    其表面呈现出独特的<strong>「 社交恐惧症光泽 」</strong>，在特定角度下会折射出<strong>「 我不想上班 」</strong>的七彩光芒。
+                </p>
+                <p>
+                    乌木的主要用途包括：✅ 深夜emo时的依靠对象 ✅ 朋友圈文案的灵感来源 ✅ 龙宫年度搞笑担当
+                </p>
+            </div>
+            <div class="stats-panel">
+                <h3>⚡ 乌木属性面板 ⚡</h3>
+                <div class="stat-row">
+                    <span>防御力</span>
+                    <div class="stat-bar"><div class="stat-bar-fill" style="width: 99%;"></div></div>
+                    <span>999</span>
+                </div>
+                <div class="stat-row">
+                    <span>幽默感</span>
+                    <div class="stat-bar"><div class="stat-bar-fill" style="width: 5%;"></div></div>
+                    <span>-100</span>
+                </div>
+                <div class="stat-row">
+                    <span>颜值</span>
+                    <div class="stat-bar"><div class="stat-bar-fill" style="width: 100%;"></div></div>
+                    <span>∞</span>
+                </div>
+                <div class="stat-row">
+                    <span>智商</span>
+                    <div class="stat-bar"><div class="stat-bar-fill" style="width: 50%;"></div></div>
+                    <span>薛定谔</span>
+                </div>
+                <div class="stat-row">
+                    <span>黑化程度</span>
+                    <div class="stat-bar"><div class="stat-bar-fill" style="width: 85%;"></div></div>
+                    <span>MAX</span>
+                </div>
+                <div class="stat-row">
+                    <span>社交能力</span>
+                    <div class="stat-bar"><div class="stat-bar-fill" style="width: 3%;"></div></div>
+                    <span>-∞</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 四风档案 -->
+        <div class="sifeng-section" id="sifeng">
+            <h2 class="sifeng-title">🌪️ 四风档案 — 龙宫四大护法</h2>
+            <p style="color: #FFF; margin-bottom: 15px;">
+                「 四风 」并非简单的气象现象，而是龙宫神秘的四维空间力量。<br>
+                也有传言说，这其实是<strong style="color: #FF00FF;">「 一年四季都在抽风 」</strong>的另一种说法。
+            </p>
+            <div class="sifeng-grid">
+                <div class="sifeng-item" onclick="showSifeng(0)">
+                    <span class="icon">🌸</span>
+                    <span class="name">春风</span>
+                    <span class="desc">温和中带着一丝欠揍</span>
+                </div>
+                <div class="sifeng-item" onclick="showSifeng(1)">
+                    <span class="icon">☀️</span>
+                    <span class="name">夏风</span>
+                    <span class="desc">热到你怀疑人生</span>
+                </div>
+                <div class="sifeng-item" onclick="showSifeng(2)">
+                    <span class="icon">🍂</span>
+                    <span class="name">秋风</span>
+                    <span class="desc">萧瑟中透着一丝凉意</span>
+                </div>
+                <div class="sifeng-item" onclick="showSifeng(3)">
+                    <span class="icon">❄️</span>
+                    <span class="name">冬风</span>
+                    <span class="desc">冷到你灵魂出窍</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 趣味测试 -->
+        <div class="test-section" id="test">
+            <div class="archive-card" style="transform: rotate(0deg);">
+                <div class="archive-card-header" style="background: #8A2BE2;">
+                    <span>🧪 龙宫趣味测试</span>
+                    <span class="classification" style="background: #00FF00;">免费</span>
+                </div>
+                <div class="archive-card-body" style="text-align: center;">
+                    <p style="color: #000; margin-bottom: 20px; font-size: 16px;">
+                        测试你的「龙宫适配度」！
+                    </p>
+                    <button class="test-btn" onclick="runTest()">
+                        🎰 开始测试
+                    </button>
+                    <div id="test-result" style="margin-top: 20px; font-size: 18px; color: #FF0000; font-weight: bold;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 联络站 -->
+        <div class="archive-card" id="contact" style="transform: rotate(1deg);">
+            <div class="archive-card-header" style="background: #00FFFF; color: #000;">
+                <span>📡 龙宫联络站</span>
+            </div>
+            <div class="archive-card-body" style="text-align: center;">
+                <p style="color: #000; margin-bottom: 20px;">
+                    如需与龙宫取得联系，请通过以下方式：<br>
+                    <small>（温馨提示：龙宫不保证回复，因为我们都在摸鱼）</small>
+                </p>
+                <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://github.com/5u-h" target="_blank" class="nav-btn" style="text-decoration: none;">
+                        🐙 GitHub
+                    </a>
+                    <button class="nav-btn" onclick="showPopup('📧', '邮箱地址', '发送邮件到：dragon@palace.fish\n（假的，别真发）')">
+                        📧 邮箱
+                    </button>
+                    <button class="nav-btn" onclick="showPopup('🐦', '推特', '关注 @DragonPalace420\n（假的账号）')">
+                        🐦 推特
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部 -->
     <footer class="footer">
-        <p class="footer-text">
-            Designed & Built by <a href="https://github.com/5u-h" data-hover>5u-h</a> // 2026
+        <div class="ascii-art">
+    ╔══════════════════════════════════════════════════════╗
+    ║                                                      ║
+    ║   🐉 龙宫非正常人类观察档案 🐉                        ║
+    ║                                                      ║
+    ║   本档案仅供娱乐，请勿当真                             ║
+    ║   如有雷同，纯属巧合                                  ║
+    ║                                                      ║
+    ╚══════════════════════════════════════════════════════╝
+        </div>
+        <p>© 2026 龙宫档案局 | 非正常人类研究中心</p>
+        <p style="margin-top: 10px; color: #FF00FF;">
+            「 在代码与混沌之间，我们选择了混沌 」
+        </p>
+        <p style="margin-top: 15px; font-size: 8px;">
+            本站已通过龙宫安全认证（认证编号：LGSB-420-69）
         </p>
     </footer>
 
-    <!-- Terminal Easter Egg -->
-    <div class="terminal-trigger" id="terminal-trigger" data-hover>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="4 17 10 11 4 5"/>
-            <line x1="12" y1="19" x2="20" y2="19"/>
-        </svg>
+    <!-- 音乐控制 -->
+    <div class="music-control">
+        <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
+            🎵
+        </button>
     </div>
 
-    <div class="terminal-overlay" id="terminal-overlay">
-        <div class="terminal">
-            <div class="terminal-header">
-                <div class="terminal-dot red"></div>
-                <div class="terminal-dot yellow"></div>
-                <div class="terminal-dot green"></div>
-                <span class="terminal-title">station://terminal</span>
-            </div>
-            <div class="terminal-body" id="terminal-body">
-                <div class="terminal-line">
-                    <span class="output">Welcome to Digital Station Terminal v1.0</span>
-                </div>
-                <div class="terminal-line">
-                    <span class="output">Type "help" to see available commands.</span>
-                </div>
-                <div class="terminal-line terminal-input-line">
-                    <span class="prompt">guest@station:~$</span>
-                    <input type="text" class="terminal-input" id="terminal-input" autofocus>
-                </div>
-            </div>
-            <button class="terminal-close" id="terminal-close">×</button>
-        </div>
-    </div>
+    <audio id="bgMusic" loop>
+        <source src="dragon-music.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
-        // Custom Cursor
-        const cursor = document.getElementById('cursor');
-        const cursorDot = document.getElementById('cursor-dot');
-        let mouseX = 0, mouseY = 0;
-        let cursorX = 0, cursorY = 0;
-        const trails = [];
+        // 警告弹窗
+        function closeWarning(accepted) {
+            const warning = document.getElementById('warning');
+            if (accepted) {
+                warning.classList.add('hidden');
+                showPopup('🎉', '欢迎进入龙宫！', '您已通过龙宫安全认证！\n请尽情享受这场精神污染之旅~');
+            } else {
+                showPopup('😢', '胆小鬼！', '龙宫又不会吃了你！\n...好吧可能会。');
+                setTimeout(() => {
+                    warning.classList.add('hidden');
+                }, 2000);
+            }
+        }
 
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            cursorDot.style.left = mouseX + 'px';
-            cursorDot.style.top = mouseY + 'px';
+        // 弹窗
+        function showPopup(emoji, title, text) {
+            document.getElementById('popup-emoji').textContent = emoji;
+            document.getElementById('popup-title').textContent = title;
+            document.getElementById('popup-text').textContent = text;
+            document.getElementById('popup').classList.add('active');
+        }
 
-            // Create trail
-            const trail = document.createElement('div');
-            trail.className = 'cursor-trail';
-            trail.style.left = mouseX + 'px';
-            trail.style.top = mouseY + 'px';
-            document.body.appendChild(trail);
-            trails.push(trail);
+        function closePopup() {
+            document.getElementById('popup').classList.remove('active');
+        }
 
+        // 音乐控制
+        let isPlaying = false;
+        function toggleMusic() {
+            const music = document.getElementById('bgMusic');
+            const btn = document.getElementById('musicBtn');
+            if (isPlaying) {
+                music.pause();
+                btn.classList.remove('playing');
+                btn.textContent = '🎵';
+            } else {
+                music.play().catch(() => {
+                    showPopup('😅', '音乐播放失败', '浏览器拒绝播放音乐\n可能是因为太难听了');
+                });
+                btn.classList.add('playing');
+                btn.textContent = '🔊';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // 滚动
+        function scrollTo(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 四风测试
+        const sifengResults = [
+            '春风拂面型：你是一个温柔的人，但偶尔也会吹乱别人的发型。',
+            '夏日炎炎型：你的热情能融化冰山，也能热死蚊子。',
+            '秋风萧瑟型：你很有文艺气息，但请不要在朋友圈发伤感文案。',
+            '冬风凛冽型：你的冷幽默无人能懂，建议改行当冰雕。'
+        ];
+
+        function showSifeng(index) {
+            showPopup(['🌸', '☀️', '🍂', '❄️'][index], ['春风', '夏风', '秋风', '冬风'][index], sifengResults[index]);
+        }
+
+        // 趣味测试
+        const testResults = [
+            '你的龙宫适配度为 0%！龙宫拒绝承认你的存在！',
+            '你的龙宫适配度为 42%！勉强可以当个门卫。',
+            '你的龙宫适配度为 69%！恭喜你，可以进入龙宫厨房帮忙洗碗。',
+            '你的龙宫适配度为 100%！你是龙宫失散多年的王子/公主！',
+            '你的龙宫适配度为 -100%！你是来砸场子的吧？！'
+        ];
+
+        function runTest() {
+            const result = document.getElementById('test-result');
+            result.textContent = '测试中...';
+            
             setTimeout(() => {
-                trail.style.opacity = '0';
-                setTimeout(() => trail.remove(), 300);
-            }, 100);
-        });
-
-        function animateCursor() {
-            cursorX += (mouseX - cursorX) * 0.15;
-            cursorY += (mouseY - cursorY) * 0.15;
-            cursor.style.left = cursorX + 'px';
-            cursor.style.top = cursorY + 'px';
-            requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
-
-        // Hover effects
-        document.querySelectorAll('[data-hover]').forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-        });
-
-        // Ripple effect
-        document.querySelectorAll('[data-ripple]').forEach(el => {
-            el.addEventListener('click', function(e) {
-                const ripple = document.createElement('span');
-                ripple.className = 'ripple';
-                const rect = this.getBoundingClientRect();
-                ripple.style.left = (e.clientX - rect.left) + 'px';
-                ripple.style.top = (e.clientY - rect.top) + 'px';
-                this.appendChild(ripple);
-                setTimeout(() => ripple.remove(), 600);
-            });
-        });
-
-        // Three.js Particle Background
-        const canvas = document.getElementById('canvas-bg');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        class Particle {
-            constructor() {
-                this.reset();
-            }
-
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = (Math.random() - 0.5) * 0.5;
-                this.opacity = Math.random() * 0.5 + 0.2;
-                this.color = Math.random() > 0.5 ? '#8A2BE2' : '#00FFCC';
-            }
-
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-
-                if (this.x < 0 || this.x > canvas.width ||
-                    this.y < 0 || this.y > canvas.height) {
-                    this.reset();
-                }
-            }
-
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.globalAlpha = this.opacity;
-                ctx.fill();
-                ctx.globalAlpha = 1;
-            }
+                const random = Math.floor(Math.random() * testResults.length);
+                result.textContent = testResults[random];
+                result.style.animation = 'shake 0.3s';
+                setTimeout(() => result.style.animation = '', 300);
+            }, 1500);
         }
 
-        // Create particles
-        for (let i = 0; i < 150; i++) {
-            particles.push(new Particle());
-        }
+        // 鼠标跟随特效
+        document.addEventListener('mousemove', (e) => {
+            const trail = document.createElement('div');
+            trail.style.cssText = `
+                position: fixed;
+                left: ${e.clientX}px;
+                top: ${e.clientY}px;
+                width: 10px;
+                height: 10px;
+                background: ${Math.random() > 0.5 ? '#FF00FF' : '#00FFFF'};
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9998;
+                animation: pop 0.3s ease forwards;
+            `;
+            document.body.appendChild(trail);
+            setTimeout(() => trail.remove(), 300);
+        });
 
-        // Connect nearby particles
-        function connectParticles() {
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 150) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = '#8A2BE2';
-                        ctx.globalAlpha = 0.1 * (1 - distance / 150);
-                        ctx.lineWidth = 0.5;
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                        ctx.globalAlpha = 1;
-                    }
-                }
+        // 随机弹窗彩蛋
+        setTimeout(() => {
+            if (Math.random() > 0.7) {
+                showPopup('👀', '你在干嘛？', '你已经盯着屏幕看了很久了\n建议站起来活动一下~');
             }
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-            connectParticles();
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-
-        // Scroll animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-        // Terminal Easter Egg
-        const terminalTrigger = document.getElementById('terminal-trigger');
-        const terminalOverlay = document.getElementById('terminal-overlay');
-        const terminalInput = document.getElementById('terminal-input');
-        const terminalBody = document.getElementById('terminal-body');
-        const terminalClose = document.getElementById('terminal-close');
-
-        terminalTrigger.addEventListener('click', () => {
-            terminalOverlay.classList.add('active');
-            terminalInput.focus();
-        });
-
-        terminalClose.addEventListener('click', () => {
-            terminalOverlay.classList.remove('active');
-        });
-
-        terminalOverlay.addEventListener('click', (e) => {
-            if (e.target === terminalOverlay) {
-                terminalOverlay.classList.remove('active');
-            }
-        });
-
-        const commands = {
-            help: 'Available commands: help, about, skills, contact, clear, github, resume',
-            about: 'I am a full-stack developer who builds elegant digital experiences. Based in the digital universe.',
-            skills: 'Languages: JavaScript, TypeScript, Python, Rust\nFrameworks: React, Vue, Node.js, Next.js\nTools: Git, Docker, Linux, VS Code',
-            contact: 'Email: hello@example.com\nGitHub: github.com/5u-h\nTwitter: @yourhandle',
-            github: 'Opening GitHub profile...',
-            resume: 'Downloading resume... (just kidding, this is a demo!)',
-            clear: 'CLEAR'
-        };
-
-        terminalInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const cmd = terminalInput.value.trim().toLowerCase();
-                const output = commands[cmd] || `Command not found: ${cmd}. Type "help" for available commands.`;
-
-                // Add command line
-                const cmdLine = document.createElement('div');
-                cmdLine.className = 'terminal-line';
-                cmdLine.innerHTML = `<span class="prompt">guest@station:~$</span> <span class="command">${cmd}</span>`;
-                terminalBody.insertBefore(cmdLine, terminalBody.lastElementChild);
-
-                // Add output
-                if (cmd === 'clear') {
-                    terminalBody.innerHTML = '';
-                    terminalBody.appendChild(terminalInput.parentElement);
-                } else if (output) {
-                    const outLine = document.createElement('div');
-                    outLine.className = 'terminal-line';
-                    outLine.innerHTML = `<span class="output">${output.replace(/\n/g, '<br>')}</span>`;
-                    terminalBody.insertBefore(outLine, terminalBody.lastElementChild);
-                }
-
-                terminalInput.value = '';
-                terminalBody.scrollTop = terminalBody.scrollHeight;
-            }
-        });
-
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
-
-        // Form submission
-        document.querySelector('.contact-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            alert('Signal transmitted! (This is a demo)');
-        });
-
-        // Typewriter effect for hero
-        const heroLabel = document.querySelector('.hero-label');
-        const originalText = heroLabel.textContent;
-        heroLabel.textContent = '';
-        let charIndex = 0;
-
-        function typeWriter() {
-            if (charIndex < originalText.length) {
-                heroLabel.textContent += originalText.charAt(charIndex);
-                charIndex++;
-                setTimeout(typeWriter, 50);
-            }
-        }
-
-        setTimeout(typeWriter, 1000);
-
-        // Parallax effect on scroll
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const hero = document.querySelector('.hero-content');
-            if (hero) {
-                hero.style.transform = `translateY(${scrolled * 0.3}px)`;
-                hero.style.opacity = 1 - scrolled / 600;
-            }
-        });
+        }, 30000);
     </script>
 </body>
 </html>
