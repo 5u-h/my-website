@@ -3,73 +3,1408 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Awesome Site</title>
+    <title>DIGITAL STATION // Private Space</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-primary: #0B0C10;
+            --bg-secondary: #111318;
+            --bg-card: #15171e;
+            --neon-purple: #8A2BE2;
+            --neon-cyan: #00FFCC;
+            --neon-orange: #FF4500;
+            --text-primary: #E8E8E8;
+            --text-secondary: #8892A4;
+            --text-dim: #4A5568;
+            --glow-purple: 0 0 20px rgba(138,43,226,0.4);
+            --glow-cyan: 0 0 20px rgba(0,255,204,0.4);
+            --glow-orange: 0 0 20px rgba(255,69,0,0.4);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            cursor: none;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
             min-height: 100vh;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--neon-cyan);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            transition: transform 0.15s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor.hover {
+            transform: translate(-50%, -50%) scale(1.8);
+            border-color: var(--neon-purple);
+            box-shadow: var(--glow-purple);
+        }
+
+        .cursor-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10001;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.6;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Film Grain & CRT Effects */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+        }
+
+        .scanline-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9997;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0,0,0,0.1) 0px,
+                rgba(0,0,0,0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            opacity: 0.3;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 24px 48px;
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, transparent 100%);
+        }
+
+        .nav-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+            text-decoration: none;
+            letter-spacing: 2px;
+            text-shadow: var(--glow-cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-cyan);
+            text-shadow: var(--glow-cyan);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--neon-cyan);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #canvas-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 800px;
+            padding: 0 24px;
+        }
+
+        .hero-label {
+            font-size: 0.75rem;
+            color: var(--neon-purple);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards 0.5s;
+            text-shadow: var(--glow-purple);
+        }
+
+        .hero-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards 0.8s;
+        }
+
+        .hero-title .gradient-text {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto 40px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards 1.1s;
+            line-height: 1.8;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            gap: 16px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards 1.4s;
+        }
+
+        .btn-primary {
+            padding: 14px 32px;
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            background: var(--neon-cyan);
+            color: var(--bg-primary);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .btn-secondary {
+            padding: 14px 32px;
+            background: transparent;
+            border: 1px solid var(--text-dim);
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--neon-purple);
+            color: var(--neon-purple);
+            box-shadow: var(--glow-purple);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards 2s;
+        }
+
+        .scroll-indicator span {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(180deg, var(--neon-cyan), transparent);
+            animation: scrollPulse 2s ease infinite;
+        }
+
+        /* Sections */
+        section {
+            padding: 120px 48px;
+            position: relative;
+        }
+
+        .section-header {
+            margin-bottom: 64px;
+        }
+
+        .section-label {
+            font-size: 0.7rem;
+            color: var(--neon-purple);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            text-shadow: var(--glow-purple);
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+        }
+
+        /* About Section - System Config */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .system-config {
+            background: var(--bg-card);
+            border: 1px solid rgba(138,43,226,0.2);
+            padding: 32px;
+            position: relative;
+        }
+
+        .system-config::before {
+            content: 'SYSTEM SPECS';
+            position: absolute;
+            top: -10px;
+            left: 24px;
+            background: var(--bg-primary);
+            padding: 0 12px;
+            font-size: 0.7rem;
+            color: var(--neon-purple);
+            letter-spacing: 2px;
+        }
+
+        .config-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .config-row:last-child {
+            border-bottom: none;
+        }
+
+        .config-key {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        .config-value {
+            color: var(--neon-cyan);
+            font-size: 0.85rem;
+            text-align: right;
+        }
+
+        .about-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .about-text p {
+            color: var(--text-secondary);
+            line-height: 2;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--neon-cyan);
+            font-size: 0.8rem;
+            margin-top: 16px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            animation: pulse 2s ease infinite;
+        }
+
+        /* Projects Section - Bento Box */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 280px);
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .bento-item {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .bento-item:hover {
+            transform: translateY(-8px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), var(--glow-cyan);
+        }
+
+        .bento-item.large {
+            grid-column: span 2;
+        }
+
+        .bento-item.tall {
+            grid-row: span 2;
+        }
+
+        .bento-tag {
+            font-size: 0.65rem;
+            color: var(--neon-purple);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .bento-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .bento-desc {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .bento-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .bento-tech {
+            padding: 4px 12px;
+            background: rgba(138,43,226,0.1);
+            border: 1px solid rgba(138,43,226,0.3);
+            font-size: 0.7rem;
+            color: var(--neon-purple);
+        }
+
+        .bento-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(138,43,226,0.1) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .bento-item:hover::after {
+            opacity: 1;
+        }
+
+        /* Contact Section */
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .contact-text {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 48px;
+            line-height: 1.8;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 48px;
+        }
+
+        .social-link {
+            width: 60px;
+            height: 60px;
+            border: 1px solid var(--text-dim);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-link:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: var(--glow-cyan);
+            transform: translateY(-4px);
+        }
+
+        .social-link svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0,255,204,0.3);
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+        }
+
+        .contact-form {
+            display: grid;
+            gap: 20px;
+            text-align: left;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 14px 16px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .submit-btn {
+            padding: 16px 32px;
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            cursor: none;
+            transition: all 0.3s ease;
+            width: fit-content;
+        }
+
+        .submit-btn:hover {
+            background: var(--neon-cyan);
+            color: var(--bg-primary);
+            box-shadow: var(--glow-cyan);
+        }
+
+        /* Terminal Easter Egg */
+        .terminal-trigger {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--text-dim);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            opacity: 0.3;
+        }
+
+        .terminal-trigger:hover {
+            opacity: 1;
+            border-color: var(--neon-cyan);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .terminal-trigger svg {
+            width: 18px;
+            height: 18px;
+            color: var(--text-secondary);
+        }
+
+        .terminal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            display: none;
             align-items: center;
             justify-content: center;
         }
 
-        .container {
+        .terminal-overlay.active {
+            display: flex;
+        }
+
+        .terminal {
+            width: 90%;
+            max-width: 700px;
+            background: #0D1117;
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 0 60px rgba(0,255,204,0.1);
+        }
+
+        .terminal-header {
+            background: #161B22;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot.red { background: #FF5F56; }
+        .terminal-dot.yellow { background: #FFBD2E; }
+        .terminal-dot.green { background: #27C93F; }
+
+        .terminal-title {
+            flex: 1;
             text-align: center;
-            color: white;
-            padding: 40px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
         }
 
-        h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        .terminal-body {
+            padding: 24px;
+            height: 400px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            line-height: 1.8;
         }
 
-        p {
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-            opacity: 0.9;
+        .terminal-line {
+            margin-bottom: 4px;
         }
 
-        .btn {
-            display: inline-block;
-            padding: 15px 40px;
-            background: white;
-            color: #667eea;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            transition: transform 0.3s, box-shadow 0.3s;
+        .terminal-line .prompt {
+            color: var(--neon-cyan);
         }
 
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        .terminal-line .command {
+            color: var(--text-primary);
         }
 
+        .terminal-line .output {
+            color: var(--text-secondary);
+        }
+
+        .terminal-line .error {
+            color: var(--neon-orange);
+        }
+
+        .terminal-input-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .terminal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.5rem;
+            cursor: none;
+            transition: color 0.3s ease;
+        }
+
+        .terminal-close:hover {
+            color: var(--neon-orange);
+        }
+
+        /* Footer */
         .footer {
-            margin-top: 60px;
-            opacity: 0.7;
-            font-size: 0.9rem;
+            padding: 48px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+        }
+
+        .footer-text {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+
+        .footer-text a {
+            color: var(--neon-cyan);
+            text-decoration: none;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes scrollPulse {
+            0% { opacity: 0; transform: scaleY(0); transform-origin: top; }
+            50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
+            100% { opacity: 0; transform: scaleY(1); transform-origin: bottom; }
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bento-grid {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto;
+            }
+
+            .bento-item.large {
+                grid-column: span 2;
+            }
+
+            .bento-item.tall {
+                grid-row: span 1;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            section {
+                padding: 80px 24px;
+            }
+
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bento-item.large {
+                grid-column: span 1;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .social-links {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to My Site</h1>
-        <p>A simple website deployed with GitHub Pages</p>
-        <a href="https://github.com" class="btn" target="_blank">Visit GitHub</a>
-        <div class="footer">
-            <p>Built with ❤️ | 2026</p>
+    <!-- Cursor -->
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+
+    <!-- Overlays -->
+    <div class="noise-overlay"></div>
+    <div class="scanline-overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="#" class="nav-logo">STATION://</a>
+        <ul class="nav-links">
+            <li><a href="#about" data-hover>ABOUT</a></li>
+            <li><a href="#projects" data-hover>PROJECTS</a></li>
+            <li><a href="#contact" data-hover>CONTACT</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <canvas id="canvas-bg"></canvas>
+        <div class="hero-content">
+            <p class="hero-label">// DIGITAL SPACE STATION</p>
+            <h1 class="hero-title">
+                <span class="gradient-text">在代码与像素间</span><br>
+                构建秩序
+            </h1>
+            <p class="hero-subtitle">
+                一个漂浮在数字宇宙中的私人空间站。<br>
+                在这里，每一行代码都是一颗星辰。
+            </p>
+            <div class="hero-cta">
+                <a href="#projects" class="btn-primary" data-hover>EXPLORE</a>
+                <a href="#contact" class="btn-secondary" data-hover>CONNECT</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>SCROLL</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="section-header fade-in">
+            <p class="section-label">// 001</p>
+            <h2 class="section-title">系统配置</h2>
+        </div>
+        <div class="about-grid">
+            <div class="system-config fade-in">
+                <div class="config-row">
+                    <span class="config-key">OS</span>
+                    <span class="config-value">人类 v1.0</span>
+                </div>
+                <div class="config-row">
+                    <span class="config-key">CPU</span>
+                    <span class="config-value">持续学习引擎</span>
+                </div>
+                <div class="config-row">
+                    <span class="config-key">GPU</span>
+                    <span class="config-value">创意渲染单元</span>
+                </div>
+                <div class="config-row">
+                    <span class="config-key">RAM</span>
+                    <span class="config-value">无限好奇心</span>
+                </div>
+                <div class="config-row">
+                    <span class="config-key">STORAGE</span>
+                    <span class="config-value">10TB 经验数据</span>
+                </div>
+                <div class="config-row">
+                    <span class="config-key">NETWORK</span>
+                    <span class="config-value">全栈连接</span>
+                </div>
+                <div class="config-row">
+                    <span class="config-key">STATUS</span>
+                    <span class="config-value" style="color: var(--neon-cyan);">ONLINE</span>
+                </div>
+            </div>
+            <div class="about-text fade-in">
+                <p>
+                    我是一名全栈开发者，专注于构建优雅且高效的数字体验。
+                    在这个由代码编织的宇宙中，我热衷于探索技术的边界，
+                    将创意转化为可交互的现实。
+                </p>
+                <p>
+                    从前端的像素级还原到后端的架构设计，
+                    从用户界面的流畅动画到服务器的稳定运行，
+                    我相信每一个细节都值得被精心雕琢。
+                </p>
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>当前状态：接受新项目</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects">
+        <div class="section-header fade-in">
+            <p class="section-label">// 002</p>
+            <h2 class="section-title">项目矩阵</h2>
+        </div>
+        <div class="bento-grid">
+            <div class="bento-item large fade-in" data-hover>
+                <div>
+                    <p class="bento-tag">Featured Project</p>
+                    <h3 class="bento-title">NEXUS PLATFORM</h3>
+                    <p class="bento-desc">一个下一代协作平台，融合实时通信与AI智能助手，重新定义团队工作方式。</p>
+                </div>
+                <div class="bento-footer">
+                    <span class="bento-tech">React</span>
+                    <span class="bento-tech">Node.js</span>
+                    <span class="bento-tech">WebSocket</span>
+                </div>
+            </div>
+            <div class="bento-item fade-in" data-hover>
+                <div>
+                    <p class="bento-tag">Web App</p>
+                    <h3 class="bento-title">VOID TRACKER</h3>
+                    <p class="bento-desc">极简主义习惯追踪器，用数据可视化你的成长轨迹。</p>
+                </div>
+                <div class="bento-footer">
+                    <span class="bento-tech">Vue</span>
+                    <span class="bento-tech">D3.js</span>
+                </div>
+            </div>
+            <div class="bento-item fade-in" data-hover>
+                <div>
+                    <p class="bento-tag">Open Source</p>
+                    <h3 class="bento-title">PIXEL FORGE</h3>
+                    <p class="bento-desc">基于WebGL的实时图像处理工具，支持GPU加速滤镜。</p>
+                </div>
+                <div class="bento-footer">
+                    <span class="bento-tech">Three.js</span>
+                    <span class="bento-tech">WebGL</span>
+                </div>
+            </div>
+            <div class="bento-item tall fade-in" data-hover>
+                <div>
+                    <p class="bento-tag">Mobile</p>
+                    <h3 class="bento-title">STELLAR</h3>
+                    <p class="bento-desc">一款冥想与专注力训练App，用星空引导你的呼吸节奏。内置白噪音生成器和进度追踪系统。</p>
+                </div>
+                <div class="bento-footer">
+                    <span class="bento-tech">React Native</span>
+                    <span class="bento-tech">Firebase</span>
+                </div>
+            </div>
+            <div class="bento-item large fade-in" data-hover>
+                <div>
+                    <p class="bento-tag">Experimental</p>
+                    <h3 class="bento-title">CHRONO ENGINE</h3>
+                    <p class="bento-desc">基于物理的时间线编辑器，让你像编辑视频一样编辑代码历史。支持分支可视化与智能合并。</p>
+                </div>
+                <div class="bento-footer">
+                    <span class="bento-tech">TypeScript</span>
+                    <span class="bento-tech">Canvas</span>
+                    <span class="bento-tech">Git</span>
+                </div>
+            </div>
+            <div class="bento-item fade-in" data-hover>
+                <div>
+                    <p class="bento-tag">CLI Tool</p>
+                    <h3 class="bento-title">QUANTUM</h3>
+                    <p class="bento-desc">极速终端文件管理器，用模糊搜索替代无聊的cd命令。</p>
+                </div>
+                <div class="bento-footer">
+                    <span class="bento-tech">Rust</span>
+                    <span class="bento-tech">TUI</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="contact-container">
+            <div class="section-header fade-in">
+                <p class="section-label">// 003</p>
+                <h2 class="section-title">建立连接</h2>
+            </div>
+            <p class="contact-text fade-in">
+                有一个疯狂的想法？需要一个技术合伙人？<br>
+                或者只是想聊聊代码与宇宙？<br>
+                发送信号，我会在轨道上接收。
+            </p>
+            <div class="social-links fade-in">
+                <a href="https://github.com/5u-h" class="social-link" data-hover data-ripple>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                </a>
+                <a href="mailto:hello@example.com" class="social-link" data-hover data-ripple>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                    </svg>
+                </a>
+                <a href="#" class="social-link" data-hover data-ripple>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                </a>
+                <a href="#" class="social-link" data-hover data-ripple>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                </a>
+            </div>
+            <form class="contact-form fade-in">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>姓名</label>
+                        <input type="text" placeholder="你的代号" data-hover>
+                    </div>
+                    <div class="form-group">
+                        <label>邮箱</label>
+                        <input type="email" placeholder="通讯频率" data-hover>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>消息</label>
+                    <textarea placeholder="传输你的想法..." data-hover></textarea>
+                </div>
+                <button type="submit" class="submit-btn" data-hover>TRANSMIT</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text">
+            Designed & Built by <a href="https://github.com/5u-h" data-hover>5u-h</a> // 2026
+        </p>
+    </footer>
+
+    <!-- Terminal Easter Egg -->
+    <div class="terminal-trigger" id="terminal-trigger" data-hover>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="4 17 10 11 4 5"/>
+            <line x1="12" y1="19" x2="20" y2="19"/>
+        </svg>
+    </div>
+
+    <div class="terminal-overlay" id="terminal-overlay">
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="terminal-dot red"></div>
+                <div class="terminal-dot yellow"></div>
+                <div class="terminal-dot green"></div>
+                <span class="terminal-title">station://terminal</span>
+            </div>
+            <div class="terminal-body" id="terminal-body">
+                <div class="terminal-line">
+                    <span class="output">Welcome to Digital Station Terminal v1.0</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">Type "help" to see available commands.</span>
+                </div>
+                <div class="terminal-line terminal-input-line">
+                    <span class="prompt">guest@station:~$</span>
+                    <input type="text" class="terminal-input" id="terminal-input" autofocus>
+                </div>
+            </div>
+            <button class="terminal-close" id="terminal-close">×</button>
         </div>
     </div>
+
+    <script>
+        // Custom Cursor
+        const cursor = document.getElementById('cursor');
+        const cursorDot = document.getElementById('cursor-dot');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+        const trails = [];
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursorDot.style.left = mouseX + 'px';
+            cursorDot.style.top = mouseY + 'px';
+
+            // Create trail
+            const trail = document.createElement('div');
+            trail.className = 'cursor-trail';
+            trail.style.left = mouseX + 'px';
+            trail.style.top = mouseY + 'px';
+            document.body.appendChild(trail);
+            trails.push(trail);
+
+            setTimeout(() => {
+                trail.style.opacity = '0';
+                setTimeout(() => trail.remove(), 300);
+            }, 100);
+        });
+
+        function animateCursor() {
+            cursorX += (mouseX - cursorX) * 0.15;
+            cursorY += (mouseY - cursorY) * 0.15;
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Hover effects
+        document.querySelectorAll('[data-hover]').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Ripple effect
+        document.querySelectorAll('[data-ripple]').forEach(el => {
+            el.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const rect = this.getBoundingClientRect();
+                ripple.style.left = (e.clientX - rect.left) + 'px';
+                ripple.style.top = (e.clientY - rect.top) + 'px';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Three.js Particle Background
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.color = Math.random() > 0.5 ? '#8A2BE2' : '#00FFCC';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvas.width ||
+                    this.y < 0 || this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        // Create particles
+        for (let i = 0; i < 150; i++) {
+            particles.push(new Particle());
+        }
+
+        // Connect nearby particles
+        function connectParticles() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = '#8A2BE2';
+                        ctx.globalAlpha = 0.1 * (1 - distance / 150);
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                        ctx.globalAlpha = 1;
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            connectParticles();
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Terminal Easter Egg
+        const terminalTrigger = document.getElementById('terminal-trigger');
+        const terminalOverlay = document.getElementById('terminal-overlay');
+        const terminalInput = document.getElementById('terminal-input');
+        const terminalBody = document.getElementById('terminal-body');
+        const terminalClose = document.getElementById('terminal-close');
+
+        terminalTrigger.addEventListener('click', () => {
+            terminalOverlay.classList.add('active');
+            terminalInput.focus();
+        });
+
+        terminalClose.addEventListener('click', () => {
+            terminalOverlay.classList.remove('active');
+        });
+
+        terminalOverlay.addEventListener('click', (e) => {
+            if (e.target === terminalOverlay) {
+                terminalOverlay.classList.remove('active');
+            }
+        });
+
+        const commands = {
+            help: 'Available commands: help, about, skills, contact, clear, github, resume',
+            about: 'I am a full-stack developer who builds elegant digital experiences. Based in the digital universe.',
+            skills: 'Languages: JavaScript, TypeScript, Python, Rust\nFrameworks: React, Vue, Node.js, Next.js\nTools: Git, Docker, Linux, VS Code',
+            contact: 'Email: hello@example.com\nGitHub: github.com/5u-h\nTwitter: @yourhandle',
+            github: 'Opening GitHub profile...',
+            resume: 'Downloading resume... (just kidding, this is a demo!)',
+            clear: 'CLEAR'
+        };
+
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = terminalInput.value.trim().toLowerCase();
+                const output = commands[cmd] || `Command not found: ${cmd}. Type "help" for available commands.`;
+
+                // Add command line
+                const cmdLine = document.createElement('div');
+                cmdLine.className = 'terminal-line';
+                cmdLine.innerHTML = `<span class="prompt">guest@station:~$</span> <span class="command">${cmd}</span>`;
+                terminalBody.insertBefore(cmdLine, terminalBody.lastElementChild);
+
+                // Add output
+                if (cmd === 'clear') {
+                    terminalBody.innerHTML = '';
+                    terminalBody.appendChild(terminalInput.parentElement);
+                } else if (output) {
+                    const outLine = document.createElement('div');
+                    outLine.className = 'terminal-line';
+                    outLine.innerHTML = `<span class="output">${output.replace(/\n/g, '<br>')}</span>`;
+                    terminalBody.insertBefore(outLine, terminalBody.lastElementChild);
+                }
+
+                terminalInput.value = '';
+                terminalBody.scrollTop = terminalBody.scrollHeight;
+            }
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Form submission
+        document.querySelector('.contact-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Signal transmitted! (This is a demo)');
+        });
+
+        // Typewriter effect for hero
+        const heroLabel = document.querySelector('.hero-label');
+        const originalText = heroLabel.textContent;
+        heroLabel.textContent = '';
+        let charIndex = 0;
+
+        function typeWriter() {
+            if (charIndex < originalText.length) {
+                heroLabel.textContent += originalText.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeWriter, 50);
+            }
+        }
+
+        setTimeout(typeWriter, 1000);
+
+        // Parallax effect on scroll
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero-content');
+            if (hero) {
+                hero.style.transform = `translateY(${scrolled * 0.3}px)`;
+                hero.style.opacity = 1 - scrolled / 600;
+            }
+        });
+    </script>
 </body>
 </html>
